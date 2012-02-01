@@ -33,19 +33,26 @@
 #include "cinder/app/TouchEvent.h"
 
 namespace cinder { namespace tuio {
-	
+
 class Cursor : public ProfileBase {
   public:
 	Cursor() : ProfileBase() {}
 
-	Cursor( std::string source, int32_t sessionId, Vec2f pos, Vec2f speed = Vec2f::zero(), float motionAccel = 0 )
-		: ProfileBase(source,sessionId), mPos( pos ), mSpeed( speed ), mPrevPos( pos )
+	Cursor( std::string source, int32_t sessionId, Vec2f pos, Vec2f speed = Vec2f::zero(), float motionAccel = 0.0f )
+		: ProfileBase(source,sessionId), mPos( pos ), mSpeed( speed ), mPrevPos( pos ), mMotionAccel( motionAccel)
 	{}
 
 	Vec2f	getPos() const { return mPos; }
 	Vec2f	getPrevPos() const { return mPrevPos; }
 	Vec2f	getSpeed() const { return mSpeed; }
 	float	getMotionAccel() const { return mMotionAccel; }
+
+	void	setPos(Vec2f position) { mPos = position; }
+    void    setSpeed(Vec2f speed) { mSpeed = speed; }
+    void    setMotionAccel(float accel) { mMotionAccel = accel; }
+
+    void    update(Vec2f position, Vec2f speed) { mPos = position; mSpeed = speed; }
+    void    update(Vec2f position, Vec2f speed, float motionAccel) { mPos = position; mSpeed = speed; mMotionAccel = motionAccel; }
 
 	// Create from an OSC message
 	static Cursor createFromSetMessage( const osc::Message &message ) {
@@ -61,12 +68,27 @@ class Cursor : public ProfileBase {
 		return Cursor( source, sessionId, pos, speed, motionAccel );
 	}
 
+	osc::Message createSetMessage() const
+	{
+		osc::Message message;
+		message.setAddress("/tuio/2Dcur");
+		message.addStringArg("set");
+		message.addIntArg( mSessionId );
+		message.addFloatArg( mPos.x );
+		message.addFloatArg( mPos.y );
+		message.addFloatArg( mSpeed.x );
+		message.addFloatArg( mSpeed.y );
+		message.addFloatArg( mMotionAccel );
+		
+		return message;
+	}
+
   protected:
 	Vec2f		mPos, mPrevPos;
 	Vec2f		mSpeed;
 	float		mMotionAccel;
 };
-	
+
 class Cursor25d : public ProfileBase {
   public:
 	Cursor25d() : ProfileBase() {}
@@ -97,12 +119,28 @@ class Cursor25d : public ProfileBase {
 		return Cursor25d( source, sessionId, pos, speed, motionAccel );
 	}
 
+	osc::Message createSetMessage() const
+	{
+		osc::Message message;
+		message.setAddress("/tuio/25Dcur");
+		message.addStringArg("set");
+		message.addIntArg( mSessionId );
+		message.addFloatArg( mPos25.x );
+		message.addFloatArg( mPos25.y );
+		message.addFloatArg( mPos25.z );
+		message.addFloatArg( mSpeed25.x );
+		message.addFloatArg( mSpeed25.y );
+		message.addFloatArg( mSpeed25.z );
+		message.addFloatArg( mMotionAccel );
+
+		return message;
+	}
+
 private:
 	Vec3f mPos25;
 	Vec3f mPrevPos25;
 	Vec3f mSpeed25;
 	float mMotionAccel;
 };
-	
-} } // namespace cinder::tuio
 
+} } // namespace cinder::tuio

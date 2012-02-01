@@ -56,7 +56,7 @@ class Client {
 	void disconnect();
 	//! Returns whether their is an active TUIO connection
 	bool isConnected() const { return mConnected; }
-	
+
 	//! Returns a vector of currently active Objects			
 	std::vector<Object>		getObjects(std::string source) const;
 	//! Returns a vector of currently active cursors
@@ -65,7 +65,7 @@ class Client {
 
 	//! Returns a vector of currently active sources (IP addresses)
 	const std::set<std::string>&	getSources() const;
-		
+
 	//! Registers an async callback which fires when a new cursor is added
 	CallbackId	registerCursorAdded( std::function<void (Cursor)> callback );
 	//! Registers an async callback which fires when a new cursor is added
@@ -113,7 +113,7 @@ class Client {
 	CallbackId	registerObjectRemoved( T *obj, void (T::*cb)(Object) ) { return registerObjectRemoved( std::bind1st( std::mem_fun( cb ), obj ) ); }
 	//! Unregisters an async callback previously registered with registerObjectRemoved
 	void		unregisterObjectRemoved( CallbackId id );
-			
+
 	//! Registers an async callback which fires when an OSC message not handled by the TuioClient is received
 	CallbackId	registerOscMessageReceived( std::function<void (const osc::Message*)> callback );
 	//! Registers an async callback which fires when an OSC message not handled by the TuioClient is received
@@ -121,7 +121,7 @@ class Client {
 	CallbackId	registerOscMessageReceived( T *obj, void (T::*cb)(const osc::Message*) ) { return registerOscMessageReceived( std::bind1st( std::mem_fun( cb ), obj ) ); }
 	//! Unregisters an async callback previously registered with registerOscMessageReceived
 	void		unregisterOscMessageReceived( CallbackId id );
-	
+
 	//! Registers an async callback for touchesBegan events, derived from \c 2Dcur messages. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
 	CallbackId		registerTouchesBegan( std::function<void (app::TouchEvent)> callback );
 	//! Registers an async callback for touchesBegan events, derived from \c 2Dcur messages. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
@@ -167,7 +167,7 @@ class Client {
 	osc::Listener	mListener;
 
 	CallbackMgr<void (const osc::Message*)>	mOscMessageCallbacks;
-	
+
 	std::shared_ptr<ProfileHandler<Object> >		mHandlerObject;
 	std::shared_ptr<ProfileHandler<Cursor> >		mHandlerCursor;
 	std::shared_ptr<ProfileHandler<Cursor25d> >		mHandlerCursor25d;
@@ -177,5 +177,5 @@ class Client {
 	int32_t				mPastFrameThreshold;
 	mutable std::mutex	mMutex;
 };
-	
+
 } } // namespace cinder::tuio

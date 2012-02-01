@@ -6,6 +6,8 @@
  Aer Studio http://www.aerstudio.com
  All rights reserved.
 
+ Modified by Andreas Stallinger, 2011
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -29,11 +31,10 @@
 #include "cinder/Cinder.h"
 #include "cinder/Vector.h"
 
-#include "TuioClient.h"
 #include "TuioProfileBase.h"
 
 namespace cinder { namespace tuio {
-	
+
 class Object : public ProfileBase {
   public:
 	Object() : ProfileBase() {}
@@ -59,6 +60,25 @@ class Object : public ProfileBase {
 		return Object( source, sessionId, fiducialId, pos, angle, speed, rotationSpeed, motionAccel, rotationAccel );
 	}
 
+	osc::Message createSetMessage()
+	{
+		osc::Message message;
+		message.setAddress( "/tuio/2Dobj" );
+		message.addStringArg( "set" );
+		message.addIntArg( mSessionId );
+		message.addIntArg( mFiducialId );
+		message.addFloatArg( mPos.x );
+		message.addFloatArg( mPos.y );
+		message.addFloatArg( mAngle );
+		message.addFloatArg( mSpeed.x );
+		message.addFloatArg( mSpeed.y );
+		message.addFloatArg( mRotationSpeed );
+		message.addFloatArg( mMotionAccel );
+		message.addFloatArg( mRotationAccel );
+
+		return message;
+	}
+
 	Vec2f	getPos() const { return mPos; }
 	Vec2f	getPrevPos() const { return mPrevPos; }
 	Vec2f	getSpeed() const { return mSpeed; }
@@ -66,10 +86,20 @@ class Object : public ProfileBase {
 
 	int32_t getFiducialId() const {  return mFiducialId; };
 	//! Returns the angle of the object measured in radians
-	float getAngle() const { return mAngle; }
-	float getRotationSpeed() const { return mRotationSpeed; }
-	float getRotationAccel() const {  return mRotationAccel; }
+	float   getAngle() const { return mAngle; }
+	float   getRotationSpeed() const { return mRotationSpeed; }
+	float   getRotationAccel() const {  return mRotationAccel; }
 
+	void    update( Vec2f pos, float a) { mPos = pos; mAngle = a; }
+    void    update( Vec2f pos, float a, Vec2f speed) { mPos = pos; mAngle = a; mSpeed = speed;}
+
+    void    setPosition( Vec2f pos) { mPos = pos; }
+    void    setAngle(float angle) { mAngle = angle; }
+    void    setSpeed(Vec2f speed) { mSpeed = speed; }
+    void    setMotionAccel(float accel) { mMotionAccel = accel; }
+    void    setRotationAccel( float accel) { mRotationAccel = accel; }
+    void    setRotationSpeed(float speed) { mRotationSpeed = speed; }
+    
   protected:	
 	int32_t		mFiducialId;
 	float		mAngle;
@@ -80,3 +110,4 @@ class Object : public ProfileBase {
 };
 
 } } // namespace cinder::tuio
+
